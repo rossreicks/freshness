@@ -1,5 +1,4 @@
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
-import { randomUUID } from "node:crypto";
 
 export const categoryTable = pgTable("category", {
 	id: serial("id").primaryKey(),
@@ -12,7 +11,7 @@ export const recipesTable = pgTable("recipes", {
 		.notNull()
 		.references(() => categoryTable.id, { onDelete: "cascade" }),
 	name: text("name").notNull(),
-	slug: text("slug").notNull().default(randomUUID()),
+	slug: text("slug").notNull().unique(),
 	headline: text("headline"),
 	description: text("description"),
 	difficulty: text("difficulty"),
