@@ -12,10 +12,18 @@ FROM dependencies AS build
 COPY . ./
 RUN yarn build
 
+# Install production dependencies only
+FROM base AS prod-dependencies
+COPY package.json yarn.lock ./
+RUN yarn install --production
+
 # Create the final production image
 FROM node:20-slim as release
 WORKDIR /usr/src/app
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+
+# Copy production dependencies
+COPY --from=prod-dependencies /usr/src/app/node_modules ./node_modules
+
 COPY --from=build /usr/src/app/.output ./.output
 COPY --from=build /usr/src/app/.vinxi ./.vinxi
 COPY --from=build /usr/src/app/recipes.db ./recipes.db
