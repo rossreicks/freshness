@@ -12,3 +12,5 @@ helm-charts
 .editorconfig
 .idea
 coverage*
+.output
+.vinxi

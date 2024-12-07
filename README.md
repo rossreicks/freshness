@@ -7,12 +7,12 @@ A Hello Fresh Recipe Client
 To install dependencies:
 
 ```bash
-bun install
+yarn install
 ```
 
 To run the application:
 
 ```bash
-bun run dev
+yarn dev
 ```
 
