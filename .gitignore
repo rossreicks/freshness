@@ -174,3 +174,9 @@ lib
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# Tanstack
+.output
+.vinxi
+app.config.*.js
+
