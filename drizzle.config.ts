@@ -15,15 +15,17 @@ if (!database) {
     throw new Error("PG_DATABASE is required");
 }
 
+export const dbCreds = {
+    host,
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
+    database,
+    // ssl: true,
+}
+
 export default {
 	schema: "./src/db/schema.ts",
 	out: "./migrations",
 	dialect: "postgresql",
-	dbCredentials: {
-        host,
-        user: process.env.PG_USER,
-        password:  process.env.PG_PASSWORD,
-        database,
-		ssl: false,
-	},
+	dbCredentials: dbCreds,
 } satisfies Config;

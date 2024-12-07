@@ -1,6 +1,6 @@
 {
-  "id": "7e733f36-a0be-4688-a000-59bf589aa25b",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "83bc1fac-6f34-4d54-b6f8-b752e645b62d",
+  "prevId": "7e733f36-a0be-4688-a000-59bf589aa25b",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -97,7 +97,7 @@
           "name": "link",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "path": {
           "name": "path",

@@ -1,24 +1,36 @@
 CREATE TABLE IF NOT EXISTS "category" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"name" text
+	"slug" text NOT NULL,
+	"name" text NOT NULL,
+	"type" text,
+	"icon_path" text,
+	"icon_link" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp NOT NULL,
+	CONSTRAINT "category_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "images" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"oid" text NOT NULL,
 	"step_id" integer NOT NULL,
 	"link" text NOT NULL,
 	"path" text NOT NULL,
-	"caption" text NOT NULL
+	"caption" text NOT NULL,
+	CONSTRAINT "images_oid_unique" UNIQUE("oid")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ingredients" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"oid" text NOT NULL,
 	"recipe_id" integer NOT NULL,
-	"name" text NOT NULL
+	"name" text NOT NULL,
+	CONSTRAINT "ingredients_oid_unique" UNIQUE("oid")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "recipes" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"oid" text NOT NULL,
 	"category_id" integer NOT NULL,
 	"name" text NOT NULL,
 	"slug" text NOT NULL,
@@ -36,30 +48,36 @@ CREATE TABLE IF NOT EXISTS "recipes" (
 	"website_url" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp NOT NULL,
-	CONSTRAINT "recipes_slug_unique" UNIQUE("slug")
+	CONSTRAINT "recipes_oid_unique" UNIQUE("oid")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "steps" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"oid" text NOT NULL,
 	"recipe_id" integer NOT NULL,
 	"index" integer NOT NULL,
-	"instructions" text NOT NULL
+	"instructions" text NOT NULL,
+	CONSTRAINT "steps_oid_unique" UNIQUE("oid")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "timers" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"oid" text NOT NULL,
 	"step_id" integer NOT NULL,
 	"name" text NOT NULL,
-	"duration" text NOT NULL,
-	"temperature" text NOT NULL,
-	"temperature_unit" text NOT NULL,
-	"oven_mode" text NOT NULL
+	"duration" text,
+	"temperature" text,
+	"temperature_unit" text,
+	"oven_mode" text,
+	CONSTRAINT "timers_oid_unique" UNIQUE("oid")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "utensils" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"oid" text NOT NULL,
 	"recipe_id" integer NOT NULL,
-	"name" text NOT NULL
+	"name" text NOT NULL,
+	CONSTRAINT "utensils_oid_unique" UNIQUE("oid")
 );
 --> statement-breakpoint
 DO $$ BEGIN

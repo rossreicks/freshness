@@ -1,6 +1,6 @@
 {
-  "id": "7e733f36-a0be-4688-a000-59bf589aa25b",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "9fd462f5-56dc-450a-b171-fc54c782c391",
+  "prevId": "4eae26ed-c7d1-4ffa-9cd9-791429496eb6",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -97,19 +97,19 @@
           "name": "link",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "path": {
           "name": "path",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "caption": {
           "name": "caption",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -430,7 +430,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "duration": {
           "name": "duration",

@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-fresh
+  namespace: default
+spec:
+  selector:
+    app: hello-fresh
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-fresh
+  labels:
+    app: hello-fresh
+spec:
+  replicas: 1
+  progressDeadlineSeconds: 600
+  revisionHistoryLimit: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hello-fresh
+  template:
+    metadata:
+      labels:
+        app: hello-fresh
+    spec:
+      containers:
+        - name: hello-fresh
+          image: rossreicks/freshness:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hello-fresh
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`api.rossreicks.com`)
+      kind: Rule
+      services:
+        - name: hello-fresh
+          port: 80
+      middlewares:
+        - name: default-headers
+        - name: hello-fresh-route-middleware
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: hello-fresh-route-middleware
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /hello-fresh
