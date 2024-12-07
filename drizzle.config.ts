@@ -26,6 +26,8 @@ export const dbCreds = {
 export default {
 	schema: "./src/db/schema.ts",
 	out: "./migrations",
-	dialect: "postgresql",
-	dbCredentials: dbCreds,
+	dialect: "sqlite",
+    dbCredentials: {
+        url: 'file:recipes.db',
+    }
 } satisfies Config;

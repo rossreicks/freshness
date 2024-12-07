@@ -1,0 +1,35 @@
+{
+  "/Users/ross/projects/hello-fresh-load/app/global.css": {
+    "file": "assets/global-BMbyHcbr.css",
+    "src": "/Users/ross/projects/hello-fresh-load/app/global.css"
+  },
+  "_ssr-B4m0jinu.js": {
+    "file": "assets/ssr-B4m0jinu.js",
+    "name": "ssr",
+    "dynamicImports": [
+      "app/routes/index.tsx?tsr-split",
+      "app/routes/index.tsx?tsr-split"
+    ],
+    "assets": [
+      "assets/global-BMbyHcbr.css"
+    ]
+  },
+  "app/routes/index.tsx?tsr-split": {
+    "file": "assets/index-tDOaAM9_.js",
+    "name": "index",
+    "src": "app/routes/index.tsx?tsr-split",
+    "isDynamicEntry": true,
+    "imports": [
+      "_ssr-B4m0jinu.js"
+    ]
+  },
+  "virtual:$vinxi/handler/ssr": {
+    "file": "ssr.js",
+    "name": "ssr",
+    "src": "virtual:$vinxi/handler/ssr",
+    "isEntry": true,
+    "imports": [
+      "_ssr-B4m0jinu.js"
+    ]
+  }
+}

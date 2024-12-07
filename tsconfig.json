@@ -5,7 +5,7 @@
             "ESNext",
             "DOM"
         ],
-        "target": "ESNext",
+        "target": "ES2022",
         "module": "ESNext",
         "moduleDetection": "force",
         "jsx": "react-jsx",
@@ -18,11 +18,23 @@
         // Best practices
         "strict": true,
         "skipLibCheck": true,
+        "strictNullChecks": true,
         "noFallthroughCasesInSwitch": true,
         // Some stricter flags (disabled by default)
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "noPropertyAccessFromIndexSignature": false,
-        "outDir": "dist"
-    }
+        "outDir": "dist",
+        "paths": {
+            "@/*": [
+                "./app/*"
+            ],
+            "@src/*": [
+                "./src/*"
+            ],
+            "@types/*": [
+                "./types/*"
+            ]
+        }
+    },
 }

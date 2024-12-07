@@ -1,1 +1,0 @@
-ALTER TABLE "timers" ALTER COLUMN "name" DROP NOT NULL;

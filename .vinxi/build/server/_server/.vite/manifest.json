@@ -1,0 +1,14 @@
+{
+  "app/services/recipes.service.ts": {
+    "file": "c_tnh0t1.mjs",
+    "name": "c_tnh0t1",
+    "src": "app/services/recipes.service.ts",
+    "isEntry": true
+  },
+  "virtual:$vinxi/handler/server": {
+    "file": "entry.mjs",
+    "name": "entry",
+    "src": "virtual:$vinxi/handler/server",
+    "isEntry": true
+  }
+}

@@ -1,33 +1,12 @@
 {
-  "version": "6",
-  "dialect": "postgresql",
+  "version": "7",
+  "dialect": "sqlite",
   "entries": [
     {
       "idx": 0,
       "version": "6",
-      "when": 1715741096920,
-      "tag": "0000_init_db",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1715822777103,
-      "tag": "0001_allow_null_links",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1715822913069,
-      "tag": "0002_allow_null_path",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1715823202738,
-      "tag": "0003_allow_null_timer_name",
+      "when": 1733531685899,
+      "tag": "0000_calm_scrambler",
       "breakpoints": true
     }
   ]

@@ -1,113 +1,135 @@
+import { sql } from "drizzle-orm";
 import recipesJSON from "../lib/recipes.json" assert { type: "json" };
 import type { Recipes } from "../types/recipes";
-import { client, db } from './db/client';
+import { db } from "./db/client";
 import * as schema from "./db/schema";
+import { toSnakeCase } from "drizzle-orm/casing";
 
 const recipes = recipesJSON as unknown as Recipes[];
 
-try {
-	for (let i = 1500; i < recipes.length; i++) {
-        const recipe = recipes[i];
+for (let i = 1500; i < recipes.length; i++) {
+	const recipe = recipes[i];
 
-		if (i % 100 === 0) console.log(`${i} recipes added`);
+	if (i % 100 === 0) console.log(`${i} recipes added`);
 
-		const { category, ingredients, utensils, steps, ...recipeData } = recipe;
+	const { category, ingredients, utensils, steps, ...recipeData } = recipe;
 
-		const categoryIds = await db
-			.insert(schema.categories)
-			.values({ ...category })
-			.onConflictDoUpdate({
-				target: schema.categories.slug,
-				set: { updated_at: new Date() },
-			})
-			.returning({ id: schema.categories.id });
+	const categoryIds = await db
+		.insert(schema.categories)
+		.values({ ...category })
+		.onConflictDoUpdate({
+			target: schema.categories.slug,
+			set: { updated_at: sql`(CURRENT_TIMESTAMP)` },
+		})
+		.returning({ id: schema.categories.id });
 
-		const category_id = categoryIds[0].id;
+	const category_id = categoryIds[0].id;
 
-		const recipeIds = await db
-			.insert(schema.recipes)
-			.values({ ...recipe, id: undefined, category_id, oid: recipe._id.$oid })
-            .onConflictDoUpdate({
-                target: schema.recipes.oid,
-                set: { updated_at: new Date() },
-            })
-			.returning({ id: schema.recipes.id });
+	const snakeCaseRecipe = Object.entries(recipe).reduce(
+		(acc, [key, value]) => {
+			if (typeof value === "object") return acc;
+			if (Array.isArray(value)) return acc;
 
-		const recipe_id = recipeIds[0].id;
+			acc[toSnakeCase(key)] = value;
+			return acc;
+		},
+		{} as Recipes
+	);
 
-		if (ingredients.length > 0) {
-			await db.insert(schema.ingredients).values(
+	const recipeIds = await db
+		.insert(schema.recipes)
+		.values({
+			...snakeCaseRecipe,
+			id: undefined,
+			category_id,
+			oid: recipe._id.$oid,
+		})
+		.onConflictDoUpdate({
+			target: schema.recipes.oid,
+			set: { updated_at: sql`(CURRENT_TIMESTAMP)` },
+		})
+		.returning({ id: schema.recipes.id });
+
+	const recipe_id = recipeIds[0].id;
+
+	if (ingredients.length > 0) {
+		await db
+			.insert(schema.ingredients)
+			.values(
 				ingredients.map((i) => ({
 					...i,
 					id: undefined,
 					recipe_id,
 					oid: i._id.$oid,
-				})),
-			).onConflictDoNothing({ target: schema.ingredients.oid });
-		}
+				}))
+			)
+			.onConflictDoNothing({ target: schema.ingredients.oid });
+	}
 
-		if (utensils.length > 0) {
-			await db.insert(schema.utensils).values(
+	if (utensils.length > 0) {
+		await db
+			.insert(schema.utensils)
+			.values(
 				utensils.map((u) => ({
 					...u,
 					id: undefined,
 					recipe_id,
 					oid: u._id.$oid,
-				})),
-			).onConflictDoNothing({ target: schema.utensils.oid });
+				}))
+			)
+			.onConflictDoNothing({ target: schema.utensils.oid });
+	}
+
+	for (const step of steps) {
+		const { images, timers, ...stepData } = step;
+
+		const stepIds = await db
+			.insert(schema.steps)
+			.values({
+				...stepData,
+				id: undefined,
+				recipe_id,
+				oid: step._id.$oid,
+				index: Number.parseInt(step.index),
+			})
+			.onConflictDoUpdate({
+				target: schema.steps.oid,
+				set: { recipe_id },
+			})
+			.returning({ id: schema.steps.id });
+
+		const step_id = stepIds[0].id;
+
+		if (images.length > 0) {
+			await db
+				.insert(schema.images)
+				.values(
+					images.map((i) => ({
+						...i,
+						id: undefined,
+						step_id,
+						oid: i._id.$oid,
+					}))
+				)
+				.onConflictDoNothing({ target: schema.images.oid });
 		}
 
-		for (const step of steps) {
-			const { images, timers, ...stepData } = step;
-
-			const stepIds = await db
-				.insert(schema.steps)
-				.values({
-					...stepData,
-					id: undefined,
-					recipe_id,
-					oid: step._id.$oid,
-					index: Number.parseInt(step.index),
-				})
-                .onConflictDoUpdate({
-                    target: schema.steps.oid,
-                    set: { recipe_id },
-                })
-				.returning({ id: schema.steps.id });
-
-			const step_id = stepIds[0].id;
-
-			if (images.length > 0) {
-				await db
-					.insert(schema.images)
-					.values(
-						images.map((i) => ({
-							...i,
-							id: undefined,
-							step_id,
-							oid: i._id.$oid,
-						})),
-					).onConflictDoNothing({ target: schema.images.oid });
-			}
-
-			if (timers.length > 0) {
-				await db
-					.insert(schema.timers)
-					.values(
-						timers.map((t) => ({
-							...t,
-							id: undefined,
-							step_id,
-							oid: t._id.$oid,
-							temperature_unit: t.temperatureUnit,
-							oven_mode: t.ovenMode,
-						})),
-					).onConflictDoNothing({ target: schema.timers.oid });
-			}
+		if (timers.length > 0) {
+			await db
+				.insert(schema.timers)
+				.values(
+					timers.map((t) => ({
+						...t,
+						id: undefined,
+						step_id,
+						oid: t._id.$oid,
+						temperature_unit: t.temperatureUnit,
+						oven_mode: t.ovenMode,
+					}))
+				)
+				.onConflictDoNothing({ target: schema.timers.oid });
 		}
 	}
-} finally {
-	client.end();
 }
 
 // const recipesToAdd: Record<string, Omit<Recipes, 'ingredients' | 'category' | 'utensils' | 'steps'>> = {};

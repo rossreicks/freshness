@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM oven/bun:1 AS base
+FROM oven/bun:1 as base
 WORKDIR /usr/src/app
 
 # install dependencies into temp directory
@@ -21,19 +21,26 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
+# don't know why this is necessary, but it is
+FROM base AS debug
+RUN stat /usr/src/app/node_modules/@tanstack/start/dist/esm/client/createServerFn.js
+
 # [optional] tests & build
 ENV NODE_ENV=production
+ENV SERVER_PRESET=bun
 RUN bun test
+RUN bun run build
 
 # copy production dependencies and source code into final image
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /usr/src/app/src ./src
+COPY --from=prerelease /usr/src/app/bun.lockb .
 COPY --from=prerelease /usr/src/app/package.json .
-COPY --from=prerelease /usr/src/app/drizzle.config.ts .
-COPY --from=prerelease /usr/src/app/.env .
+COPY --from=prerelease /usr/src/app/.vinxi .vinxi
+COPY --from=prerelease /usr/src/app/.output .output
+COPY --from=prerelease /usr/src/app/recipes.db recipes.db
 
 # run the app
 USER bun
 EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "run", "src/server.ts" ]
+ENTRYPOINT [ "bun", "run", ".output/server/index.mjs" ]

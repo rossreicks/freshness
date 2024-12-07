@@ -1,21 +1,25 @@
-import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm/sql";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-export const categories = pgTable("category", {
-	id: serial("id").primaryKey(),
-    slug: text("slug").unique().notNull(),
+export const categories = sqliteTable("category", {
+	id: integer("id").primaryKey(),
+	slug: text("slug").unique().notNull(),
 	name: text("name").notNull(),
-    type: text("type"),
-    icon_path: text("icon_path"),
-    icon_link: text("icon_link"),
-    created_at: timestamp("created_at").notNull().defaultNow(),
-    updated_at: timestamp("updated_at")
-        .notNull()
-        .$onUpdate(() => new Date()),
+	type: text("type"),
+	icon_path: text("icon_path"),
+	icon_link: text("icon_link"),
+	created_at: text("created_at")
+		.notNull()
+		.default(sql`(CURRENT_TIMESTAMP)`),
+	updated_at: text("updated_at")
+		.notNull()
+		.default(sql`(CURRENT_TIMESTAMP)`)
+		.$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
 });
 
-export const recipes = pgTable("recipes", {
-	id: serial("id").primaryKey(),
-    oid: text("oid").unique().notNull(),
+export const recipes = sqliteTable("recipes", {
+	id: integer("id").primaryKey(),
+	oid: text("oid").unique().notNull(),
 	category_id: integer("category_id")
 		.notNull()
 		.references(() => categories.id, { onDelete: "cascade" }),
@@ -33,33 +37,36 @@ export const recipes = pgTable("recipes", {
 	favorites_count: text("favorites_count"),
 	is_premium: text("is_premium"),
 	website_url: text("website_url"),
-	created_at: timestamp("created_at").notNull().defaultNow(),
-	updated_at: timestamp("updated_at")
+	created_at: text("created_at")
 		.notNull()
-		.$onUpdate(() => new Date()),
+		.default(sql`(CURRENT_TIMESTAMP)`),
+	updated_at: text("updated_at")
+		.notNull()
+		.default(sql`(CURRENT_TIMESTAMP)`)
+		.$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
 });
 
-export const ingredients = pgTable("ingredients", {
-	id: serial("id").primaryKey(),
-    oid: text("oid").unique().notNull(),
+export const ingredients = sqliteTable("ingredients", {
+	id: integer("id").primaryKey(),
+	oid: text("oid").unique().notNull(),
 	recipe_id: integer("recipe_id")
 		.notNull()
 		.references(() => recipes.id, { onDelete: "cascade" }),
 	name: text("name").notNull(),
 });
 
-export const utensils = pgTable("utensils", {
-	id: serial("id").primaryKey(),
-    oid: text("oid").unique().notNull(),
+export const utensils = sqliteTable("utensils", {
+	id: integer("id").primaryKey(),
+	oid: text("oid").unique().notNull(),
 	recipe_id: integer("recipe_id")
 		.notNull()
 		.references(() => recipes.id, { onDelete: "cascade" }),
 	name: text("name").notNull(),
 });
 
-export const steps = pgTable("steps", {
-	id: serial("id").primaryKey(),
-    oid: text("oid").unique().notNull(),
+export const steps = sqliteTable("steps", {
+	id: integer("id").primaryKey(),
+	oid: text("oid").unique().notNull(),
 	recipe_id: integer("recipe_id")
 		.notNull()
 		.references(() => recipes.id, { onDelete: "cascade" }),
@@ -67,20 +74,20 @@ export const steps = pgTable("steps", {
 	instructions: text("instructions").notNull(),
 });
 
-export const images = pgTable("images", {
-	id: serial("id").primaryKey(),
-    oid: text("oid").unique().notNull(),
+export const images = sqliteTable("images", {
+	id: integer("id").primaryKey(),
+	oid: text("oid").unique().notNull(),
 	step_id: integer("step_id")
 		.notNull()
 		.references(() => steps.id, { onDelete: "cascade" }),
 	link: text("link"),
 	path: text("path"),
-	caption: text("caption")
+	caption: text("caption"),
 });
 
-export const timers = pgTable("timers", {
-	id: serial("id").primaryKey(),
-    oid: text("oid").unique().notNull(),
+export const timers = sqliteTable("timers", {
+	id: integer("id").primaryKey(),
+	oid: text("oid").unique().notNull(),
 	step_id: integer("step_id")
 		.notNull()
 		.references(() => steps.id, { onDelete: "cascade" }),
@@ -91,4 +98,5 @@ export const timers = pgTable("timers", {
 	oven_mode: text("oven_mode"),
 });
 
+// Adjust this based on your usage
 export type SelectRecipe = typeof recipes.$inferSelect;
