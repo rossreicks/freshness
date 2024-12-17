@@ -9,7 +9,7 @@ export default defineConfig({
 			}),
 		],
 	},
-	server: {
-		preset: "node-server",
-	},
+	// server: {
+	// 	preset: "vercel",
+	// },
 });
